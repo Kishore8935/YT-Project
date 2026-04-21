@@ -5,6 +5,10 @@ import { z } from "zod";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 
+const R2_url = "https://0d6cec569b2e5afe971c23fa09b7f74c.r2.cloudflarestorage.com"
+const R2_ACCESS_KEY = process.env.R2_accessKey;
+const R2_SECRET_KEY = process.env.R2_secretKey;
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -141,6 +145,9 @@ app.post("/api/videos", async (req,res)=>{
     });
     res.status(201).json(video);
 });
+
+
+app.post()
 
 app.listen(3000,()=>{
     console.log("Server is running on port 3000");
