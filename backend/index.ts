@@ -4,10 +4,24 @@ import bcrypt from "bcrypt";
 import { z } from "zod";
 import jwt from "jsonwebtoken";
 import cors from "cors";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { randomUUID } from "crypto";
 
-const R2_url = "https://0d6cec569b2e5afe971c23fa09b7f74c.r2.cloudflarestorage.com"
-const R2_ACCESS_KEY = process.env.R2_accessKey;
-const R2_SECRET_KEY = process.env.R2_secretKey;
+const R2_url = "https://0d6cec569b2e5afe971c23fa09b7f74c.r2.cloudflarestorage.com";
+const R2_ACCESS_KEY = process.env.R2_accessKey!;
+const R2_SECRET_KEY = process.env.R2_secretKey!;
+const R2_BUCKET = process.env.R2_bucket!;
+const R2_PUBLIC_URL = process.env.R2_publicUrl!;
+
+const s3 = new S3Client({
+    region: "auto",
+    endpoint: R2_url,
+    credentials: {
+        accessKeyId: R2_ACCESS_KEY,
+        secretAccessKey: R2_SECRET_KEY,
+    },
+});
 
 const app = express();
 app.use(cors());
@@ -42,6 +56,12 @@ const uploadSchema = z.object({
     title: z.string().min(1),
     videoUrl: z.url(),
     thumbnail: z.url(),
+})
+
+const uploadUrlSchema = z.object({
+    fileName: z.string().min(1),
+    contentType: z.string().min(1),
+    kind: z.enum(["video", "thumbnail"]),
 })
 
 
@@ -141,13 +161,38 @@ app.post("/api/videos", async (req,res)=>{
     }
 
     const video = await prisma.uploads.create({
-        data:{...parsed.data, userId},
+        data:{...parsed.data, userId}, 
     });
     res.status(201).json(video);
 });
 
 
-app.post()
+app.post("/api/upload-url", async (req, res) => {
+    const userId = getUserId(req);
+    if (!userId) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+    }
+
+    const parsed = uploadUrlSchema.safeParse(req.body);
+    if (!parsed.success) {
+        res.status(400).json({ message: "Invalid request body", errors: parsed.error.message });
+        return;
+    }
+
+    const { fileName, contentType, kind } = parsed.data;
+    // Strip any path the browser may include and keep the upload predictable.
+    const safeName = fileName.split(/[\\/]/).pop()!.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const key = `${kind}s/${userId}/${randomUUID()}-${safeName}`;
+
+    const uploadUrl = await getSignedUrl(
+        s3,
+        new PutObjectCommand({ Bucket: R2_BUCKET, Key: key, ContentType: contentType }),
+        { expiresIn: 600 }
+    );
+
+    res.json({ uploadUrl, publicUrl: `${R2_PUBLIC_URL}/${key}` });
+});
 
 app.listen(3000,()=>{
     console.log("Server is running on port 3000");
