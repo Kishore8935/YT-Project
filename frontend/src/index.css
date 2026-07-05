@@ -12,9 +12,37 @@
   --yt-text-secondary: #606060;
   --yt-border:         #e5e5e5;
   --yt-hover:          #f2f2f2;
+  --error-bg:          #fff0f0;
+  --error-border:      #ffcccc;
+  --error-text:        #cc0000;
+  --info-bg:           #f0f7ff;
+  --info-border:       #c0d8f8;
+  --info-text:         #1a56cc;
+  --skeleton-a:        #e0e0e0;
+  --skeleton-b:        #f0f0f0;
   --appbar-height:     56px;
   --radius-card:       12px;
   --radius-sm:         8px;
+}
+
+/* Dark theme — toggled via data-theme on <html>, set by theme.ts */
+:root[data-theme="dark"] {
+  --brand:             #6366f1;
+  --brand-hover:       #818cf8;
+  --yt-bg:             #0f0f0f;
+  --yt-white:          #212121;
+  --yt-text:           #f1f1f1;
+  --yt-text-secondary: #aaaaaa;
+  --yt-border:         #3f3f3f;
+  --yt-hover:          #3a3a3a;
+  --error-bg:          #3a1f1f;
+  --error-border:      #5c2b2b;
+  --error-text:        #ff8a8a;
+  --info-bg:           #1a2740;
+  --info-border:       #2c4570;
+  --info-text:         #82b3ff;
+  --skeleton-a:        #2a2a2a;
+  --skeleton-b:        #3a3a3a;
 }
 
 /* ── Base ───────────────────────────────────────────── */
@@ -27,6 +55,7 @@ body {
   background: var(--yt-bg);
   color: var(--yt-text);
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.15s, color 0.15s;
 }
 
 /* ── App layout ─────────────────────────────────────── */
@@ -125,6 +154,23 @@ body {
   gap: 8px;
   flex-shrink: 0;
 }
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--yt-text);
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.theme-toggle:hover { background: var(--yt-hover); }
 
 /* ── Buttons ─────────────────────────────────────────── */
 .btn-primary {
@@ -257,7 +303,7 @@ body {
 
 /* ── Skeleton loader ─────────────────────────────────── */
 .skeleton {
-  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background: linear-gradient(90deg, var(--skeleton-a) 25%, var(--skeleton-b) 50%, var(--skeleton-a) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: var(--radius-sm);
@@ -493,7 +539,7 @@ body {
 
 .watch-comment-delete:hover {
   background: var(--yt-hover);
-  color: #cc0000;
+  color: var(--error-text);
 }
 
 .watch-comment-text {
@@ -575,9 +621,9 @@ body {
 .auth-footer a:hover { text-decoration: underline; }
 
 .auth-error {
-  background: #fff0f0;
-  border: 1px solid #ffcccc;
-  color: #cc0000;
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  color: var(--error-text);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
   font-size: 13px;
@@ -588,7 +634,7 @@ body {
 .channel-banner {
   width: 100%;
   height: 160px;
-  background: linear-gradient(135deg, #d9d9d9, #ececec);
+  background: linear-gradient(135deg, var(--yt-border), var(--yt-hover));
 }
 
 .channel-banner img {
@@ -675,13 +721,13 @@ body {
 }
 
 .upload-status.error {
-  background: #fff0f0;
-  border: 1px solid #ffcccc;
-  color: #cc0000;
+  background: var(--error-bg);
+  border: 1px solid var(--error-border);
+  color: var(--error-text);
 }
 
 .upload-status.info {
-  background: #f0f7ff;
-  border: 1px solid #c0d8f8;
-  color: #1a56cc;
+  background: var(--info-bg);
+  border: 1px solid var(--info-border);
+  color: var(--info-text);
 }
