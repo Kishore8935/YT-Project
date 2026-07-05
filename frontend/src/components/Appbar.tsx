@@ -29,7 +29,7 @@ export function Appbar() {
         <div className="appbar">
             <div className="appbar-logo" onClick={() => navigate("/")}>
                 <span className="appbar-logo-icon">▶</span>
-                <span className="appbar-logo-text">YouTube</span>
+                <span className="appbar-logo-text">StreamHub</span>
             </div>
 
             <form className="appbar-search" onSubmit={handleSearch}>

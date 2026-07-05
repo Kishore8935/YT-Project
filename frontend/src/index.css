@@ -4,8 +4,8 @@
 
 /* ── Design tokens ─────────────────────────────────── */
 :root {
-  --yt-red:            #ff0000;
-  --yt-red-hover:      #cc0000;
+  --brand:             #4f46e5;
+  --brand-hover:       #4338ca;
   --yt-bg:             #f9f9f9;
   --yt-white:          #ffffff;
   --yt-text:           #0f0f0f;
@@ -68,7 +68,7 @@ body {
 }
 
 .appbar-logo-icon {
-  background: var(--yt-red);
+  background: var(--brand);
   color: white;
   border-radius: 6px;
   padding: 2px 6px;
@@ -128,7 +128,7 @@ body {
 
 /* ── Buttons ─────────────────────────────────────────── */
 .btn-primary {
-  background: var(--yt-red);
+  background: var(--brand);
   color: white;
   border: none;
   border-radius: 20px;
@@ -140,7 +140,7 @@ body {
   transition: background 0.15s;
   white-space: nowrap;
 }
-.btn-primary:hover { background: var(--yt-red-hover); }
+.btn-primary:hover { background: var(--brand-hover); }
 .btn-primary:disabled { background: #aaa; cursor: not-allowed; }
 
 .btn-secondary {
@@ -567,7 +567,7 @@ body {
 }
 
 .auth-footer a {
-  color: var(--yt-red);
+  color: var(--brand);
   text-decoration: none;
   font-weight: 500;
 }

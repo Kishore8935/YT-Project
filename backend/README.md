@@ -1,4 +1,4 @@
-# Backend — YouTube Clone API
+# Backend — StreamHub API
 
 Express 5 + Prisma + PostgreSQL API. See the [root README](../README.md) for the
 full project overview, architecture, and setup.

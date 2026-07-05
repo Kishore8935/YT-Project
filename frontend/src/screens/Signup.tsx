@@ -36,7 +36,7 @@ export function Signup() {
         <div className="auth-page">
             <div className="auth-container">
                 <div className="auth-title">Create account</div>
-                <div className="auth-subtitle">Join YouTube today</div>
+                <div className="auth-subtitle">Join StreamHub today</div>
 
                 {error && <div className="auth-error">{error}</div>}
 

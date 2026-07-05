@@ -19,7 +19,7 @@ const app = express();
 // Interactive API docs. Mounted before helmet so its inline assets aren't
 // blocked by the Content-Security-Policy, and before the rate limiter.
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openApiSpec, {
-    customSiteTitle: "YouTube Clone API Docs",
+    customSiteTitle: "StreamHub API Docs",
 }));
 
 // Security headers (CSP, X-Frame-Options, etc.) — one line, 15 protections.
