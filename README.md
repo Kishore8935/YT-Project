@@ -1,7 +1,7 @@
-# YouTube Clone — Full-Stack Video Platform
+# StreamHub — Full-Stack Video Platform
 
-A production-style video-sharing platform (YouTube clone) built to demonstrate
-real backend engineering: layered API design, relational data modeling, direct-to-storage
+A production-style video-sharing platform built to demonstrate real backend
+engineering: layered API design, relational data modeling, direct-to-storage
 file uploads, JWT auth, and a documented, tested REST API.
 
 <!-- Fill these in after deploying (Tier 1, step 4) -->

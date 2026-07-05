@@ -5,10 +5,10 @@
 export const openApiSpec = {
     openapi: "3.0.3",
     info: {
-        title: "YouTube Clone API",
+        title: "StreamHub API",
         version: "1.0.0",
         description:
-            "REST API for a YouTube-style video platform. Auth is JWT (Bearer). " +
+            "REST API for StreamHub, a video-sharing platform. Auth is JWT (Bearer). " +
             "Click **Authorize** and paste a token from /api/signin to try protected routes.",
     },
     // Relative URL so "Try it out" targets whatever host serves the docs
