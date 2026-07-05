@@ -1,75 +1,104 @@
-import axios from "axios"
-import { useState } from "react"
+import axios from "axios";
+import { useState } from "react";
+import { API_URL as API } from "../config";
 
-const API = "http://localhost:3000"
+export function Upload() {
+    const [title, setTitle] = useState("");
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+    const [status, setStatus] = useState("");
+    const [isError, setIsError] = useState(false);
+    const [uploading, setUploading] = useState(false);
 
-export function Upload(){
-    const [title, setTitle] = useState("")
-    const [videoFile, setVideoFile] = useState<File | null>(null)
-    const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
-    const [status, setStatus] = useState("")
-    const [uploading, setUploading] = useState(false)
-
-    // Asks the backend for a presigned URL, PUTs the file straight to R2,
-    // and returns the public URL the file will live at.
     async function uploadToR2(file: File, kind: "video" | "thumbnail"): Promise<string> {
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
         const { data } = await axios.post(`${API}/api/upload-url`, {
             fileName: file.name,
             contentType: file.type,
             kind,
-        }, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
+        }, { headers: { Authorization: `Bearer ${token}` } });
 
         await axios.put(data.uploadUrl, file, {
-            headers: { "Content-Type": file.type }
-        })
+            headers: { "Content-Type": file.type },
+        });
 
-        return data.publicUrl
+        return data.publicUrl;
     }
 
-    async function upload(){
+    async function upload() {
         if (!title || !videoFile || !thumbnailFile) {
-            setStatus("Please add a title, a video file, and a thumbnail.")
-            return
+            setIsError(true);
+            setStatus("Please add a title, a video file, and a thumbnail.");
+            return;
         }
         try {
-            setUploading(true)
-            setStatus("Uploading video…")
-            const videoUrl = await uploadToR2(videoFile, "video")
+            setUploading(true);
+            setIsError(false);
 
-            setStatus("Uploading thumbnail…")
-            const thumbnail = await uploadToR2(thumbnailFile, "thumbnail")
+            setStatus("Uploading video…");
+            const videoUrl = await uploadToR2(videoFile, "video");
 
-            setStatus("Saving…")
+            setStatus("Uploading thumbnail…");
+            const thumbnail = await uploadToR2(thumbnailFile, "thumbnail");
+
+            setStatus("Saving…");
             await axios.post(`${API}/api/videos`, { title, videoUrl, thumbnail }, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-            })
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            });
 
-            window.location.href = "/"
+            window.location.href = "/";
         } catch (err: any) {
-            setStatus("Upload failed: " + (err.response?.data?.message || err.message))
-            setUploading(false)
+            setIsError(true);
+            setStatus("Upload failed: " + (err.response?.data?.message || err.message));
+            setUploading(false);
         }
     }
 
-    return <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: 20, maxWidth: 400 }}>
-        <input
-            type="text"
-            placeholder="title"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-        />
-        <label>Video<br/>
-            <input type="file" accept="video/*" onChange={e => setVideoFile(e.target.files?.[0] ?? null)} />
-        </label>
-        <label>Thumbnail<br/>
-            <input type="file" accept="image/*" onChange={e => setThumbnailFile(e.target.files?.[0] ?? null)} />
-        </label>
-        <button onClick={upload} disabled={uploading}>
-            {uploading ? "Uploading…" : "Complete upload"}
-        </button>
-        {status && <div>{status}</div>}
-    </div>
+    return (
+        <div className="upload-page">
+            <div className="upload-container">
+                <div className="auth-title" style={{ marginBottom: 4 }}>Upload video</div>
+                <div className="auth-subtitle">Share your video with the world</div>
+
+                <div className="form-group">
+                    <label className="form-label">Title</label>
+                    <input
+                        className="form-input"
+                        type="text"
+                        placeholder="Enter video title"
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Video file</label>
+                    <input
+                        className="form-input"
+                        type="file"
+                        accept="video/*"
+                        onChange={e => setVideoFile(e.target.files?.[0] ?? null)}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Thumbnail image</label>
+                    <input
+                        className="form-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={e => setThumbnailFile(e.target.files?.[0] ?? null)}
+                    />
+                </div>
+
+                <button className="btn-primary" style={{ width: "100%" }} onClick={upload} disabled={uploading}>
+                    {uploading ? status : "Upload"}
+                </button>
+
+                {status && !uploading && (
+                    <div className={`upload-status ${isError ? "error" : "info"}`}>{status}</div>
+                )}
+            </div>
+        </div>
+    );
 }

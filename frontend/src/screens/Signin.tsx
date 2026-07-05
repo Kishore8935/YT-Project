@@ -1,24 +1,73 @@
-import App from "@/App"
-import { Appbar } from "@/components/Appbar"
+import { useState } from "react";
+import { useNavigate, Link } from "react-router";
+import axios from "axios";
+import { API_URL } from "../config";
 
-import axios from "axios"
+export function Signin() {
+    const navigate = useNavigate();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-
-export function Signin(){
-    async function signin(){
-        axios.post("http://localhost:3000/api/signin", {
-            username: document.getElementById("username")!.value,
-            password: document.getElementById("password")!.value
-        }).then(response => {
-            const data = response.data
-            localStorage.setItem("token", data.token)
-            window.location = "/"
-        })
+    async function signin() {
+        if (!username || !password) {
+            setError("Please fill in all fields.");
+            return;
+        }
+        setLoading(true);
+        setError("");
+        try {
+            const res = await axios.post(`${API_URL}/api/signin`, { username, password });
+            localStorage.setItem("token", res.data.token);
+            navigate("/");
+        } catch (err: any) {
+            setError(err.response?.data?.errors || "Something went wrong.");
+        } finally {
+            setLoading(false);
+        }
     }
-    return <div>
-       
-        <input id="username" type="text" placeholder="Username"></input>
-        <input id="password" type="password" placeholder="Password"></input>
-        <button onClick={signin}>Sign in</button>
-    </div>
+
+    return (
+        <div className="auth-page">
+            <div className="auth-container">
+                <div className="auth-title">Sign in</div>
+                <div className="auth-subtitle">Welcome back</div>
+
+                {error && <div className="auth-error">{error}</div>}
+
+                <div className="form-group">
+                    <label className="form-label">Username</label>
+                    <input
+                        className="form-input"
+                        type="text"
+                        placeholder="Enter your username"
+                        value={username}
+                        onChange={e => setUsername(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && signin()}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Password</label>
+                    <input
+                        className="form-input"
+                        type="password"
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && signin()}
+                    />
+                </div>
+
+                <button className="btn-primary" style={{ width: "100%" }} onClick={signin} disabled={loading}>
+                    {loading ? "Signing in…" : "Sign in"}
+                </button>
+
+                <div className="auth-footer">
+                    Don't have an account? <Link to="/signup">Sign up</Link>
+                </div>
+            </div>
+        </div>
+    );
 }
