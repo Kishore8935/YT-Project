@@ -1,15 +1,14 @@
-# backend
+# Backend — YouTube Clone API
 
-To install dependencies:
+Express 5 + Prisma + PostgreSQL API. See the [root README](../README.md) for the
+full project overview, architecture, and setup.
 
 ```bash
 bun install
+cp .env.example .env      # fill in values
+bun run dev               # http://localhost:3000
+bun run seed              # load demo data
+bun test                  # integration tests
 ```
 
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.3.12. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+Interactive API docs: **http://localhost:3000/api/docs**

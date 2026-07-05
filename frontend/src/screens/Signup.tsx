@@ -1,27 +1,95 @@
-import App from "@/App"
-import { Appbar } from "@/components/Appbar"
+import { useState } from "react";
+import { useNavigate, Link } from "react-router";
+import axios from "axios";
+import { API_URL } from "../config";
 
-import axios from "axios"
+export function Signup() {
+    const navigate = useNavigate();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [channelName, setChannelName] = useState("");
+    const [gender, setGender] = useState("Male");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-
-export function Signup(){
-    async function signup(){
-        axios.post("http://localhost:3000/api/signup", {
-            username: document.getElementById("username")!.value,
-            password: document.getElementById("password")!.value,
-            channelName: document.getElementById("channelname")!.value,
-            gender: "Male"
-        }).then(response => {
-            const data = response.data
-            localStorage.setItem("token", data.token)
-            window.location = "/signin"
-        })
+    async function signup() {
+        if (!username || !password || !channelName) {
+            setError("Please fill in all fields.");
+            return;
+        }
+        setLoading(true);
+        setError("");
+        try {
+            const res = await axios.post(`${API_URL}/api/signup`, {
+                username, password, channelName, gender
+            });
+            localStorage.setItem("token", res.data.token);
+            navigate("/");
+        } catch (err: any) {
+            setError(err.response?.data?.message || err.response?.data?.errors || "Something went wrong.");
+        } finally {
+            setLoading(false);
+        }
     }
-    return <div>
-        
-        <input id="username" type="text" placeholder="Username"></input>
-        <input id="password" type="password" placeholder="Password"></input>
-        <input id="channelname" type="text" placeholder="Channel Name"></input>
-        <button onClick={signup}>Sign up</button>
-    </div>
+
+    return (
+        <div className="auth-page">
+            <div className="auth-container">
+                <div className="auth-title">Create account</div>
+                <div className="auth-subtitle">Join YouTube today</div>
+
+                {error && <div className="auth-error">{error}</div>}
+
+                <div className="form-group">
+                    <label className="form-label">Username</label>
+                    <input
+                        className="form-input"
+                        type="text"
+                        placeholder="Choose a username (min 3 chars)"
+                        value={username}
+                        onChange={e => setUsername(e.target.value)}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Password</label>
+                    <input
+                        className="form-input"
+                        type="password"
+                        placeholder="Choose a password (min 6 chars)"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Channel name</label>
+                    <input
+                        className="form-input"
+                        type="text"
+                        placeholder="Your channel name"
+                        value={channelName}
+                        onChange={e => setChannelName(e.target.value)}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label className="form-label">Gender</label>
+                    <select className="form-input" value={gender} onChange={e => setGender(e.target.value)}>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <button className="btn-primary" style={{ width: "100%" }} onClick={signup} disabled={loading}>
+                    {loading ? "Creating account…" : "Create account"}
+                </button>
+
+                <div className="auth-footer">
+                    Already have an account? <Link to="/signin">Sign in</Link>
+                </div>
+            </div>
+        </div>
+    );
 }

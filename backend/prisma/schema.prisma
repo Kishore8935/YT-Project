@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -13,30 +8,98 @@ datasource db {
 }
 
 model User {
-  id                String    @id   @default(uuid())
-  username          String    
-  password          String
-  gender            Gender
-  channelName       String?
-  banner            String?
-  profilePicture    String?
-  subscriberCount   Int       @default(0)
-  description       String?
-  uploads           Uploads[]
+  id              String         @id @default(uuid())
+  username        String         @unique
+  password        String
+  gender          Gender
+  channelName     String?
+  banner          String?
+  profilePicture  String?
+  subscriberCount Int            @default(0)
+  description     String?
+  uploads         Uploads[]
+  comments        Comment[]
+  likes           Like[]
+  // subscriptions this user has made (they are the subscriber)
+  subscriptions   Subscription[] @relation("subscriber")
+  // subscriptions to this user's channel (they are the channel)
+  subscribers     Subscription[] @relation("channel")
+  watchHistory    WatchHistory[]
 }
 
 model Uploads {
-  id              String    @id   @default(uuid())  
-  title           String    @default("")
-  videoUrl        String
-  thumbnail       String
-  userId          String
-  user            User      @relation(fields: [userId], references: [id])
-  createdAt       DateTime  @default(now())
+  id          String         @id @default(uuid())
+  title       String         @default("")
+  description String?
+  videoUrl    String
+  thumbnail   String
+  views       Int            @default(0)
+  userId      String
+  user        User           @relation(fields: [userId], references: [id])
+  createdAt   DateTime       @default(now())
+  comments    Comment[]
+  likes       Like[]
+  watchHistory WatchHistory[]
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([title])
 }
 
-enum Gender{
+model Comment {
+  id        String   @id @default(uuid())
+  text      String
+  userId    String
+  videoId   String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  video     Uploads  @relation(fields: [videoId], references: [id])
+
+  @@index([videoId])
+}
+
+model Like {
+  userId  String
+  videoId String
+  type    LikeType
+  user    User    @relation(fields: [userId], references: [id])
+  video   Uploads @relation(fields: [videoId], references: [id])
+
+  // One reaction per user per video — enforced at the DB level.
+  @@unique([userId, videoId])
+  @@index([videoId])
+}
+
+model Subscription {
+  subscriberId String
+  channelId    String
+  createdAt    DateTime @default(now())
+  subscriber   User     @relation("subscriber", fields: [subscriberId], references: [id])
+  channel      User     @relation("channel", fields: [channelId], references: [id])
+
+  // A user can only subscribe to a channel once.
+  @@unique([subscriberId, channelId])
+  @@index([channelId])
+}
+
+model WatchHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  videoId   String
+  watchedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  video     Uploads  @relation(fields: [videoId], references: [id])
+
+  @@index([userId])
+}
+
+enum Gender {
   Male
   Female
   Other
+}
+
+enum LikeType {
+  LIKE
+  DISLIKE
 }

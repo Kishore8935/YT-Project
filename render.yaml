@@ -1,0 +1,38 @@
+# Render Blueprint — deploys the API and the web frontend as two Docker services.
+# In Render: New → Blueprint → connect this repo. Then fill in the secret env
+# vars (marked sync:false) in the dashboard for each service.
+services:
+  # ── Backend API ─────────────────────────────────────────────
+  - type: web
+    name: yt-clone-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: R2_accessKey
+        sync: false
+      - key: R2_secretKey
+        sync: false
+      - key: R2_bucket
+        sync: false
+      - key: R2_publicUrl
+        sync: false
+
+  # ── Frontend (Bun-served React SPA) ─────────────────────────
+  - type: web
+    name: yt-clone-web
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: free
+    envVars:
+      # Set this to the API service's URL after the first deploy,
+      # e.g. https://yt-clone-api.onrender.com
+      - key: BUN_PUBLIC_API_URL
+        sync: false
