@@ -1,10 +1,11 @@
 // Single source of truth for the backend API base URL.
 //
-// In production, set BUN_PUBLIC_API_URL in the deploy environment — Bun inlines
-// any BUN_PUBLIC_* var into the browser bundle at build time (e.g.
-// https://your-api.onrender.com). In local dev the var is usually unset, so we
-// guard `process` (which doesn't exist in the browser) and fall back to localhost.
-const fromEnv =
-    typeof process !== "undefined" ? process.env.BUN_PUBLIC_API_URL : undefined;
-
-export const API_URL = fromEnv || "http://localhost:3000";
+// Bun inlines any BUN_PUBLIC_* var into the browser bundle at build time by
+// statically replacing `process.env.BUN_PUBLIC_API_URL` with the literal value.
+// - Production (Render): BUN_PUBLIC_API_URL is set in the service env.
+// - Local dev: the `dev` script in package.json sets it to http://localhost:3000.
+//
+// Because the var is always set in both environments, Bun always replaces the
+// reference with a string literal — no bare `process` access survives into the
+// browser (which would throw). The `|| localhost` is just a last-resort default.
+export const API_URL = process.env.BUN_PUBLIC_API_URL || "http://localhost:3000";
