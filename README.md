@@ -4,10 +4,11 @@ A production-style video-sharing platform built to demonstrate real backend
 engineering: layered API design, relational data modeling, direct-to-storage
 file uploads, JWT auth, and a documented, tested REST API.
 
-<!-- Fill these in after deploying (Tier 1, step 4) -->
-**🔗 Live demo:** _coming soon_ &nbsp;·&nbsp; **📖 API docs (Swagger):** _coming soon_ (`/api/docs`)
+**🔗 Live demo:** https://yt-clone-web.onrender.com &nbsp;·&nbsp; **📖 API docs (Swagger):** https://yt-clone-api-p36e.onrender.com/api/docs
 
 > **Demo login** — username: `demo_alice` &nbsp; password: `demo1234`
+>
+> Hosted on Render's free tier — the API sleeps after 15 min idle, so the first request after that can take ~50s to wake up. Subsequent requests are fast.
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 ![Bun](https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white)
